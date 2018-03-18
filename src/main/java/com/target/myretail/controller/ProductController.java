@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.target.myretail.dto.Product;
@@ -36,7 +35,7 @@ public class ProductController {
 	 * This API can be used to fetch Product by productId.
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<Product> getProductDetails(
+	public ResponseEntity<Product> getProductDetails(
 			@PathVariable(value = "id", required = true) String productId) throws Exception{
 		logger.info("In getProductDetails method.");
 		Product product;
@@ -58,7 +57,7 @@ public class ProductController {
 	 * substitute for http://redsky.target.com/v2/* an external API.
 	 */
 	@RequestMapping(value = "/v2/pdp/tcin/{id}", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<String> getProductName(@PathVariable(value = "id", required = true) String id) {
+	public ResponseEntity<String> getProductName(@PathVariable(value = "id", required = true) String id) {
 		logger.info("In getProductName method.");
 		String productInfo = "{\"product\": {\"item\": {\"product_description\": {\"title\": \"The Big Lebowski (Blu-ray)\"}}}}";
 		return new ResponseEntity<>(productInfo, HttpStatus.OK);
@@ -72,7 +71,7 @@ public class ProductController {
 	 * product object in requestBody.
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<Product> updateProductPrice(
+	public ResponseEntity<Product> updateProductPrice(
 			@PathVariable(value = "id", required = true) String id, @RequestBody Product product) throws Exception{
 		logger.info("In updateProductPrice method.");
 		if (!id.equalsIgnoreCase(product.getId())) {
