@@ -84,10 +84,25 @@ public class ProductControllerTest {
 	public void getProductDetailsTest_ivalidProductId() throws Exception{
 		Mockito.when(productServiceMock.getProductDetails(Mockito.anyString())).thenReturn(null);
 
-		String url = "/products/78089";
+		String url = "/products/1234";
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON_VALUE);
 		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 		assertEquals("Product not found.", result.getResponse().getErrorMessage());
+	}
+	
+	/**
+	 * @throws Exception
+	 * InternalServerException Test
+	 */
+	@Test
+//	@Test(expected=ProductNotFoundException.class)
+	public void getProductDetailsTest_internalServerException() throws Exception{
+		Mockito.when(productServiceMock.getProductDetails(Mockito.anyString())).thenThrow(new RuntimeException());
+
+		String url = "/products/78089";
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON_VALUE);
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		assertEquals(500, result.getResponse().getStatus());
 	}
 	
 	/**
@@ -140,7 +155,7 @@ public class ProductControllerTest {
 	
 	/**
 	 * @throws Exception
-	 * EmptyProductPriceException Test
+	 * ProductIdMisMatchException Test
 	 */
 	@Test
 	public void updateProductPriceTest_idMismatch() throws Exception {
@@ -153,6 +168,25 @@ public class ProductControllerTest {
 		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
 		assertEquals("Product id in body does not match with id in path.", result.getResponse().getErrorMessage());
+		
+	}
+	
+	/**
+	 * @throws Exception
+	 * ProductNotFoundException Test
+	 */
+	@Test
+	public void updateProductPriceTest_productNotFound() throws Exception {
+		Mockito.when(productServiceMock.updateProduct(Mockito.anyString(), Mockito.any())).thenReturn(null);
+		
+		String url = "/products/1234456";
+		String body = "{\"id\": \"1234456\",\"current_price\": {\"value\": \"159.99\",\"currency_code\": \"USD\"}}";
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.put(url).content(body).contentType(MediaType.APPLICATION_JSON)
+	            .accept(MediaType.APPLICATION_JSON);
+		
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+		assertEquals("Product not found.", result.getResponse().getErrorMessage());
 		
 	}
 }
