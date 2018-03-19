@@ -53,4 +53,52 @@ Method     Request          Body                Description
  GET     /products/{id}     N/A            To get product details
  PUT     /products/{id}    Product         To update product price
  ```
+ 
+ #### GET ProductDetails
+ ```
+ GET localhost:9000/api/products/1234
+ 
+ Response: 200OK
+ 
+ {
+    "id": "1234",
+    "name": "The Big Lebowski (Blu-ray)",
+    "current_price": {
+        "value": "99.49",
+        "currency_code": "USD"
+    }
+}
+```
+#### Update ProductPrice
+```
+PUT localhost:9000/api/products/1234
+
+RequestBody:
+{
+    "id": "1234",
+    "name": "The Big Lebowski (Blu-ray)",
+    "current_price": {
+        "value": "199.49",
+        "currency_code": "USD"
+    }
+}
+
+ResponseStatus: 200OK
+ResponseBody:
+{
+    "id": "1234",
+    "current_price": {
+        "value": "199.49",
+        "currency_code": "USD"
+    }
+}
+```
+### Exception Handling
+
+* Throws ProductNotFoundException if you are trying to fetch/update invalid product.
+* Throws EmptyProductPriceException if you are updating product without specifying price. 
+* Throws ProductIdMisMatchException if product id in the path does not match with id in the body of update price request.
+* Throws ExternalAPIException if failed to fetch product name from external API.
+
+
 
