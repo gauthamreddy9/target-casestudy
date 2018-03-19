@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.target.myretail.dto.Price;
 import com.target.myretail.dto.Product;
 import com.target.myretail.exception.EmptyProductPriceException;
-import com.target.myretail.exception.ProductNotFoundException;
+import com.target.myretail.exception.ExternalAPIException;
 import com.target.myretail.service.ProductService;
 
 /**
@@ -77,10 +77,9 @@ public class ProductControllerTest {
 	
 	/**
 	 * @throws Exception
-	 * ProductNotFoundException Test
+	 * GET ProductNotFoundException Test
 	 */
 	@Test
-//	@Test(expected=ProductNotFoundException.class)
 	public void getProductDetailsTest_ivalidProductId() throws Exception{
 		Mockito.when(productServiceMock.getProductDetails(Mockito.anyString())).thenReturn(null);
 
@@ -92,10 +91,23 @@ public class ProductControllerTest {
 	
 	/**
 	 * @throws Exception
+	 * ExternalAPIException Test
+	 */
+	@Test
+	public void getProductDetailsTest_externalAPIException() throws Exception{
+		Mockito.when(productServiceMock.getProductDetails(Mockito.anyString())).thenThrow(new ExternalAPIException());
+
+		String url = "/products/15117729";
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON_VALUE);
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+		assertEquals("Failed to fetch product name from external API.", result.getResponse().getErrorMessage());
+	}
+	
+	/**
+	 * @throws Exception
 	 * InternalServerException Test
 	 */
 	@Test
-//	@Test(expected=ProductNotFoundException.class)
 	public void getProductDetailsTest_internalServerException() throws Exception{
 		Mockito.when(productServiceMock.getProductDetails(Mockito.anyString())).thenThrow(new RuntimeException());
 
@@ -173,7 +185,7 @@ public class ProductControllerTest {
 	
 	/**
 	 * @throws Exception
-	 * ProductNotFoundException Test
+	 * PUT ProductNotFoundException Test
 	 */
 	@Test
 	public void updateProductPriceTest_productNotFound() throws Exception {

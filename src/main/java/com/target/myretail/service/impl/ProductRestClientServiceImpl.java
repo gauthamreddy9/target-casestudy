@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -41,16 +40,16 @@ public class ProductRestClientServiceImpl implements ProductRestClientService {
 	public String getProductNameFromExtAPI(String id) throws Exception {
 		String url = buildExtUrl(id);
 		ResponseEntity<String> jsonObj = null;
+		String name = null;
 		try {
 			logger.info("Fetching product name from external API.");
 			jsonObj = restTemplate.getForEntity(url, String.class);
-		} catch (RestClientException rce) {
-			logger.error("Failed to fetch data from external API.", rce);
-			throw new ExternalAPIException("Failed to fetch data from external API.", rce);
+			if (jsonObj != null)
+				name = extractName(jsonObj.getBody());
+		} catch (Exception e) {
+			logger.error("Failed to fetch product name from external API.", e);
+			throw new ExternalAPIException("Failed to fetch data from external API.", e);
 		}
-		String name = null;
-		if (jsonObj != null)
-			name = extractName(jsonObj.getBody());
 		return name;
 	}
 

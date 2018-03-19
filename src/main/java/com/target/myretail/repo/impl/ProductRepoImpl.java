@@ -34,10 +34,16 @@ public class ProductRepoImpl implements ProductRepo {
 	 */
 	@Override
 	public Product getProductById(String id) {
-		Criteria criteria = new Criteria();
-		criteria = where("product_id").is(id);
-		Query query = new Query(criteria);
-		Product product = mongoTemplate.findOne(query, Product.class, collectionName);
+		Product product = null;
+		try{
+			Criteria criteria = new Criteria();
+			criteria = where("product_id").is(id);
+			Query query = new Query(criteria);
+			product = mongoTemplate.findOne(query, Product.class, collectionName);
+		}catch(Exception e){
+			logger.error("Failed to fetch data from mongo.", e);
+			throw e;
+		}
 		return product;
 	}
 
@@ -46,16 +52,22 @@ public class ProductRepoImpl implements ProductRepo {
 	 */
 	@Override
 	public Product updatePriceById(String id, String price, String currencyCode) {
-		Criteria criteria = where("product_id").is(id);
-		Query query = new Query(criteria);
-		Update update = new Update();
-		update.set("price.value", price);
-		if (currencyCode != null && !currencyCode.isEmpty()) {
-			update.set("price.currency_code", currencyCode);
+		Product updatedProduct = null;
+		try{
+			Criteria criteria = where("product_id").is(id);
+			Query query = new Query(criteria);
+			Update update = new Update();
+			update.set("price.value", price);
+			if (currencyCode != null && !currencyCode.isEmpty()) {
+				update.set("price.currency_code", currencyCode);
+			}
+			logger.info("Updating price for product id = "+id);
+			updatedProduct = mongoTemplate.findAndModify(query, update, new FindAndModifyOptions().returnNew(true),
+					Product.class, collectionName);
+		}catch(Exception e){
+			logger.error("Failed to update product price in mongodb.", e);
+			throw e;
 		}
-		logger.info("Updating price for product id = "+id);
-		Product updatedProduct = mongoTemplate.findAndModify(query, update, new FindAndModifyOptions().returnNew(true),
-				Product.class, collectionName);
 		return updatedProduct;
 	}
 

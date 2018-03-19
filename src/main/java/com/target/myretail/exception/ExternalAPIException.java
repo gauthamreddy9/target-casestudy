@@ -1,8 +1,12 @@
 package com.target.myretail.exception;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 /**
  * @author Gautham Reddy Created On : 03/17/2018
  */
+@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Failed to fetch product name from external API.")
 public class ExternalAPIException extends RuntimeException {
 
 	private static final long serialVersionUID = 6569499520626898508L;

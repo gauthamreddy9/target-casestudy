@@ -1,5 +1,8 @@
 package com.target.myretail.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.target.myretail.dto.Product;
+import com.target.myretail.exception.ExternalAPIException;
 import com.target.myretail.exception.ProductIdMisMatchException;
 import com.target.myretail.exception.ProductNotFoundException;
 import com.target.myretail.service.ProductService;
@@ -41,7 +45,10 @@ public class ProductController {
 		Product product;
 		try {
 			product = productService.getProductDetails(productId);
-		} catch (Exception e) {
+		} catch(ExternalAPIException eae){
+			throw eae;
+		}catch (Exception e) {
+			logger.error("Error occurred while getting product details.", e);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		if (product == null)
@@ -59,8 +66,19 @@ public class ProductController {
 	@RequestMapping(value = "/v2/pdp/tcin/{id}", method = RequestMethod.GET)
 	public ResponseEntity<String> getProductName(@PathVariable(value = "id", required = true) String id) {
 		logger.info("In getProductName method.");
-		String productInfo = "{\"product\": {\"item\": {\"product_description\": {\"title\": \"The Big Lebowski (Blu-ray)\"}}}}";
-		return new ResponseEntity<>(productInfo, HttpStatus.OK);
+		Map<String, String> namesMap = new HashMap<>();
+		String productInfo1 = "{\"product\": {\"item\": {\"product_description\": {\"title\": \"My custom product\"}}}}";
+		namesMap.put("1234",productInfo1);
+		String productInfo2 = "{\"product\": {\"item\": {\"product_description\": {\"title\": \"The Big Lebowski (Blu-ray)\"}}}}";
+		namesMap.put("13860428",productInfo2);
+		String productInfo3 = "{\"product\": {\"item\": {\"product_description\": {\"title\": \"Beats Solo 2 Wireless - Black\"}}}}";
+		namesMap.put("16696652",productInfo3);
+		
+		String productInfo = namesMap.get(id);
+		if(productInfo != null){
+			return new ResponseEntity<>(productInfo, HttpStatus.OK);
+		}
+		throw new ProductNotFoundException("Requested product name does not exists.");
 	}
 
 	/**
