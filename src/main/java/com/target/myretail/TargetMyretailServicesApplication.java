@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.web.client.RestTemplate;
 
 import com.mongodb.MongoClient;
@@ -33,6 +34,9 @@ public class TargetMyretailServicesApplication {
 	
 	public static void main(String[] args) {
 		SpringApplication.run(TargetMyretailServicesApplication.class, args);
+	}
+	
+	public void authenticationManager(AuthenticationManagerBuilder builder){
 	}
 	
 	@Bean(name = "restTemplate")

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +39,7 @@ public class ProductController {
 	 * @throws Exception 
 	 * This API can be used to fetch Product by productId.
 	 */
+	@PreAuthorize("#oauth2.hasScope('read')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Product> getProductDetails(
 			@PathVariable(value = "id", required = true) String productId) throws Exception{
@@ -88,6 +90,7 @@ public class ProductController {
 	 * This API updates product's price for a given productId and
 	 * product object in requestBody.
 	 */
+	@PreAuthorize("#oauth2.hasScope('write')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Product> updateProductPrice(
 			@PathVariable(value = "id", required = true) String id, @RequestBody Product product) throws Exception{
